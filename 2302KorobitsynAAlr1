@@ -1,0 +1,1160 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+class List
+{
+
+public:
+	List();
+
+	~List();
+
+	bool proverka();
+
+	void Delete();
+
+	void add(int a); //добавление элемента в конец списка
+
+	void push_front(int a); //добавление элемента в начало списка
+	
+	void pop_back(); //удаление последнего элемента
+
+	void pop_front(); //удаление первого элемента
+
+	int GetSize() { return Size; } // получить количество елементов в списке
+
+	void SetSize(int a) { Size+=a; }
+	
+	int Getelem(int a);
+
+	
+	void in();	//считывание положительных целочисленных элементов с клавиатуры
+
+	void out();
+		
+	class Node
+	{
+	public:
+		Node* pNext;
+		int elem;
+		Node(int elem, Node* pNext = nullptr)
+		{
+			this->elem = elem;
+			this->pNext = pNext;
+		}
+	};
+private:
+	int Size;
+	Node* head;
+	Node* last;
+public:
+	Node* Gethead() { return head; }
+
+	Node* Getlast() { return last; }
+
+	void Setlast(Node* tmp) { last=tmp; }
+};
+
+List::List()
+{
+	Size = 0;
+	head = nullptr;
+	last = head;
+}
+
+List::~List()
+{
+	Delete();
+}
+
+bool List::proverka()
+{
+	if (Size > 0)
+	{
+		return false;
+	}
+	return true;
+}
+
+void List::Delete()
+{
+	while (Size)
+	{
+		Node* temp = head;
+		head = head->pNext;
+		delete temp;
+		Size--;
+	}
+}
+
+void List::add(int a)
+{
+	if (Size == 0)
+	{
+		head = new Node(a);
+		last = head;
+	}
+	else
+	{
+		last->pNext = new Node(a);
+		last = last->pNext;
+	}
+	Size++;
+}
+
+void List::push_front(int a)
+{
+	if (Size == 0)
+	{
+		head = new Node(a);
+		last = head;
+	}
+	else
+	{
+		Node* tmp = head;
+		head = new Node(a);
+		head->pNext = tmp;
+	}
+	Size++;
+}
+
+void List::pop_back()
+{
+	Node* cur = head;
+	int i = 1;
+	while (i < Size - 1)
+	{
+		cur = cur->pNext;
+		i++;
+	}
+	Node* tmp = last;
+	last = cur;
+	last->pNext = nullptr;
+	delete (tmp);
+	Size--;
+}
+
+void List::pop_front()
+{
+	Node* tmp = head;
+	head = head->pNext;
+	delete(tmp);
+	Size--;
+}
+
+int List::Getelem(int a)
+{
+	Node* cur = head;
+	for (int i = 0; i < a; i++)
+	{
+		cur = cur->pNext;
+	}
+	return cur->elem;
+}
+
+bool GetEnter(List& A, List& B)
+{
+	if (A.GetSize() < B.GetSize())
+	{
+		return false;
+	}
+	else
+	{
+		for (int i = 0; i < A.GetSize(); i++)
+		{
+			int g = i;
+			int c = 0;
+			for (int j = 0; j < B.GetSize(); j++)
+			{
+				if (A.Getelem(g) == B.Getelem(j))
+				{
+					c++;
+					g++;
+				}
+			}
+			if (c == B.GetSize())
+			{
+				return true;
+			}
+			if ((A.GetSize() - (i+1)) < B.GetSize())
+			{
+				return false;
+			}
+		}
+	}
+}
+void List::in()
+{
+	int a = 0;
+	while (true)
+	{
+		try
+		{
+			cout << "Введите целое положительное число: ";
+			cin >> a;
+			//cout << " " << a;
+			if (cin.fail())
+			{
+				throw invalid_argument("Неверный тип данных введенного значения.");
+			}
+			else
+			{
+				if (a > 0)
+				{
+					add(a);
+				}
+				else if (a == -1)
+				{
+					break;
+				}
+				else
+				{
+					cout << "Неверный тип данных введенного значения.";
+				}
+			}
+			cout << "Вы ввели: " << a << endl;
+		}
+		catch (const invalid_argument& e) 
+		{
+			cerr << "Ошибка: " << e.what() << endl;
+			cin.clear();
+			cin.ignore();
+		}
+	}
+}
+
+void List::out()
+{
+	Node* cur = head;
+	cout << "Полученый список:" << endl;
+	while (cur != nullptr)
+	{
+		cout << cur->elem<<" ";
+		cur = cur->pNext;
+	}
+}
+int menu()
+{
+	cout << "0. Вывод полученного списка (введите '0')" << endl;
+	cout << "1. Добавление элемента в конец списка (введите '1')" << endl;
+	cout << "2. Добавление элемента в начало списка (введите '2')" << endl;
+	cout << "3. Удаление последнего элемента (введите '3')" << endl;
+	cout << "4. Удаление первого элемента (введите '4')" << endl;
+	cout << "5. Добавление элемента по индексу (вставка перед элементом, который был ранее доступен по этому индексу) (введите '5')" << endl;
+	cout << "6. Получение элемента по индексу (введите '6')" << endl;
+	cout << "7. Удаление элемента по индексу (введите '7')" << endl;
+	cout << "8. Получение размера списка (введите '8')" << endl;
+	cout << "9. Удаление всех элементов списка (введите '9')" << endl;
+	cout << "10. Замена элемента по индексу на передаваемый элемент (введите '10')" << endl;
+	cout << "11. Проверка на пустоту списка (введите '11')" << endl;
+	cout << "12. Меняет порядок элементов в списке на обратный (введите '12')" << endl;
+	cout << "13. Вставка другого списка в список, начиная с индекса (введите '13')" << endl;
+	cout << "14. Вставка другого списка в конец (введите '14')" << endl;
+	cout << "15. Вставка другого списка в начало (введите '15')" << endl;
+	cout << "16. Проверка на содержание другого списка в списке (введите '16')" << endl;
+	cout << "17. Поиск первого вхождения другого списка в список (введите '17')" << endl;
+	cout << "18. Поиск последнего вхождения другого списка в список (введите '18')" << endl;
+	cout << "19. Обмен двух элементов списка по индексам (введите '19')" << endl;
+	cout << "Для завершения программы введите '-1'" << endl;
+	int a;
+	while (true)
+	{
+		try
+		{
+			cin >> a;
+			if (cin.fail())
+			{
+				throw invalid_argument("Неверный тип данных введенного значения.");
+			}
+			else
+			{
+				return a;
+			}
+			cout << "Вы ввели: " << a << endl;
+		}
+		catch (const invalid_argument& e)
+		{
+			cerr << "Ошибка: " << e.what() << endl;
+
+			cin.clear();
+			cin.ignore();
+		}
+	}
+}
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+	List A;
+	cout << "ЗАДАЙТЕ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+	A.in();	
+	int a = 0;
+	while (true)
+	{
+		cout << "\033[H\033[J";
+		a = menu();
+		if (a == -1)
+		{
+			break;
+		}
+		if (a == 1)
+		{
+			int a;
+			while (true)
+			{
+				try
+				{
+					cout << "Введите целое положительное число: ";
+					cin >> a;
+					if (cin.fail())
+					{
+						throw invalid_argument("Неверный тип данных введенного значения.");
+					}
+					else
+					{
+						if (a > 0)
+						{
+							A.add(a);
+							break;
+						}
+						else
+						{
+							cout << "Неверный тип данных введенного значения.";
+						}
+					}
+					cout << "Вы ввели: " << a << endl;
+				}
+				catch (const invalid_argument& e)
+				{
+					cerr << "Ошибка: " << e.what() << endl;
+
+					cin.clear();
+					cin.ignore();
+				}
+			}
+		}
+		else if (a == 0)
+		{
+			A.out();
+			char s;
+			cout << endl << "Введите любой символ для выхода в меню";
+			cin >> s;
+			cin.clear();
+			cin.ignore();
+		}
+		else if (a == 2)
+		{
+			int a;
+			while (true)
+			{
+				try
+				{
+					cout << "Введите целое положительное число: ";
+					cin >> a;
+					if (cin.fail())
+					{
+						throw invalid_argument("Неверный тип данных введенного значения.");
+					}
+					else
+					{
+						if (a > 0)
+						{
+							A.push_front(a);
+							break;
+						}
+						else
+						{
+							cout << "Неверный тип данных введенного значения.";
+						}
+					}
+					cout << "Вы ввели: " << a << endl;
+				}
+				catch (const invalid_argument& e)
+				{
+					cerr << "Ошибка: " << e.what() << endl;
+
+					cin.clear();
+					cin.ignore();
+				}
+			}
+		}
+		else if (a == 3)
+		{
+			A.pop_back();
+		}
+		else if (a == 4)
+		{
+			A.pop_front();
+			cout << "УСПЕШНО";
+		}
+		else if (a == 5)
+		{
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой";
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int a;
+				int b;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента перед которым надо добавить элемент (от 0 до " << (A.GetSize() - 1) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if ((a >= 0) && (a <= (A.GetSize() - 1)))
+							{
+								while (true)
+								{
+									try
+									{
+										cout << "Введите целое положительное число: ";
+										cin >> b;
+										if (cin.fail())
+										{
+											throw invalid_argument("Неверный тип данных введенного значения.");
+										}
+										else
+										{
+											if (b > 0)
+											{
+												break;
+											}
+											else
+											{
+												cout << "Неверный тип данных введенного значения.";
+											}
+										}
+										cout << "Вы ввели: " << a << endl;
+									}
+									catch (const invalid_argument& e)
+									{
+										cerr << "Ошибка: " << e.what() << endl;
+
+										cin.clear();
+										cin.ignore();
+									}
+								}
+								if (a == 0)
+								{
+									A.push_front(b);
+								}
+								else
+								{
+									List::Node* cur = A.Gethead();
+									for (int i = 0; i < a - 1; i++)
+									{
+										cur = cur->pNext;
+									}
+									List::Node* tmp = cur->pNext;
+									cur->pNext = new List::Node(b);
+									cur = cur->pNext;
+									cur->pNext = tmp;
+									A.SetSize(1);
+								}
+								break;
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 6)
+		{
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой";
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int a;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента (от 0 до " << (A.GetSize() - 1) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if ((a >= 0) && (a <= (A.GetSize() - 1)))
+							{
+								cout << "Вы ввели: " << a << endl;
+								List::Node* cur = A.Gethead();
+								for (int i = 0; i < a; i++)
+								{
+									cur = cur->pNext;
+								}
+								cout << "Искомый элемент: " << cur->elem << endl;
+								char s;
+								cout << "Введите любой символ для выхода в меню";
+								cin >> s;
+								cin.clear();
+								cin.ignore();
+								break;
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 7)
+		{
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой";
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int a;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента (от 0 до " << (A.GetSize() - 1) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if (a == 0)
+							{
+								cout << "Вы ввели: " << a << endl;
+								A.pop_front();
+								break;
+							}
+							else if (a == A.GetSize() - 1)
+							{
+								cout << "Вы ввели: " << a << endl;
+								A.pop_back();
+								break;
+							}
+							else if ((a > 0) && (a < (A.GetSize() - 1)))
+							{
+								cout << "Вы ввели: " << a << endl;
+								List::Node* cur = A.Gethead();
+								for (int i = 0; i < a - 1; i++)
+								{
+									cur = cur->pNext;
+								}
+								List::Node* tmp = cur->pNext;
+								cur->pNext = cur->pNext->pNext;
+								delete (tmp);
+								A.SetSize(-1);
+								break;
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 8)
+		{
+			cout << endl << "Размер списка: " << A.GetSize() << " (счет с 1)" << endl;
+			char s;
+			cout << "Введите любой символ для выхода в меню";
+			cin >> s;
+			cin.clear();
+			cin.ignore();
+		}
+		else if (a == 9)
+		{
+			A.Delete();
+		}
+		else if (a == 10)
+		{
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой";
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int a;
+				int b;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента который надо заменить (от 0 до " << (A.GetSize() - 1) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if ((a >= 0) && (a <= (A.GetSize() - 1)))
+							{
+								while (true)
+								{
+									try
+									{
+										cout << "Введите целое положительное число: ";
+										cin >> b;
+										if (cin.fail())
+										{
+											throw invalid_argument("Неверный тип данных введенного значения.");
+										}
+										else
+										{
+											if (b > 0)
+											{
+												break;
+											}
+											else
+											{
+												cout << "Неверный тип данных введенного значения.";
+											}
+										}
+										cout << "Вы ввели: " << a << endl;
+									}
+									catch (const invalid_argument& e)
+									{
+										cerr << "Ошибка: " << e.what() << endl;
+
+										cin.clear();
+										cin.ignore();
+									}
+								}
+								if (a == 0)
+								{
+									cout << "Вы ввели: " << a << endl;
+									A.pop_front();
+									A.push_front(b);
+									break;
+								}
+								else if (a == A.GetSize() - 1)
+								{
+									cout << "Вы ввели: " << a << endl;
+									A.pop_back();
+									A.add(b);
+									break;
+								}
+								else if ((a > 0) && (a < (A.GetSize() - 1)))
+								{
+									cout << "Вы ввели: " << a << endl;
+									List::Node* cur = A.Gethead();
+									for (int i = 0; i < a - 1; i++)
+									{
+										cur = cur->pNext;
+									}
+									List::Node* tmp = cur->pNext;
+									cur->pNext = new List::Node(b);
+									cur = cur->pNext;
+									cur->pNext = tmp->pNext;
+									delete (tmp);
+									A.SetSize(-1);
+									break;
+								}
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 11)
+		{
+			cout << endl << "Список пустой:  ";
+			if (A.proverka())
+			{
+				cout << "Да";
+			}
+			else
+			{
+				cout << "Нет";
+			}
+			char s;
+			cout << endl << "Введите любой символ для выхода в меню";
+			cin >> s;
+			cin.clear();
+			cin.ignore();
+		}
+		else if (a == 12)
+		{
+			List B;
+			while (A.GetSize())
+			{
+				B.add(A.Getlast()->elem);
+				A.pop_back();
+			}
+			while (B.GetSize())
+			{
+				A.add(B.Gethead()->elem);
+				B.pop_front();
+			}
+		}
+		else if (a == 13)
+		{
+			cout << endl<<"ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой";
+				while (B.GetSize())
+				{
+					A.add(B.Gethead()->elem);
+					B.pop_front();
+				}
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int a;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента (от 0 до " << (A.GetSize()) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if (a == 0)
+							{
+								cout << "Вы ввели: " << a << endl;
+								List C; 
+								while (B.GetSize())
+								{
+									C.add(B.Getlast()->elem);
+									B.pop_back();
+								}
+								while (C.GetSize())
+								{
+									A.push_front(C.Gethead()->elem);
+									C.pop_front();
+								}
+								break;
+							}
+							else if (a == A.GetSize())
+							{
+								cout << "Вы ввели: " << a << endl;
+								while (B.GetSize())
+								{
+									A.add(B.Gethead()->elem);
+									B.pop_front();
+								}
+								break;
+							}
+							else if ((a > 0) && (a <= (A.GetSize() - 1)))
+							{
+								cout << "Вы ввели: " << a << endl;
+								List::Node* cur = A.Gethead();
+								int i = 0;
+								for (i; i < a; i++)
+								{
+									cur = cur->pNext;
+								}
+								List::Node* tmp = cur->pNext;
+								while (B.GetSize())
+								{
+									List::Node* cur = A.Gethead();
+									for (int j = 0; j < i - 1; j++)
+									{
+										cur = cur->pNext;
+									}
+									List::Node* tmp = cur->pNext;
+									cur->pNext = new List::Node(B.Gethead()->elem);
+									i++;
+									B.pop_front();
+									cur = cur->pNext;
+									cur->pNext = tmp;
+									A.SetSize(1);
+								}
+								cur->pNext = tmp;
+								break;
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 14)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			while (B.GetSize())
+			{
+				A.add(B.Gethead()->elem);
+				B.pop_front();
+			}
+		}
+		else if (a == 15)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			List C;
+			while (B.GetSize())
+			{
+				C.add(B.Getlast()->elem);
+				B.pop_back();
+			}
+			while (C.GetSize())
+			{
+				A.push_front(C.Gethead()->elem);
+				C.pop_front();
+			}
+		}
+		else if (a == 16)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			if (GetEnter(A, B))
+			{
+				cout << "СОДЕРЖИТ"; 
+				char s;
+				cout << endl << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				cout << "НЕ СОДЕРЖИТ"; 
+				char s;
+				cout << endl << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+		}
+		else if (a == 17)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			if (GetEnter(A, B)==0)
+			{
+				cout << "НЕ ВХОДИТ";
+				char s;
+				cout << endl << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int q = -1;
+				for (int i = 0; i < A.GetSize(); i++)
+				{
+					int g = i;
+					int c = 0;
+					for (int j = 0; j < B.GetSize(); j++)
+					{
+						if (A.Getelem(g) == B.Getelem(j))
+						{
+							if (c == 0)
+							{
+								q = g;
+							}
+							c++;
+							g++;
+						}
+					}
+					if (c == B.GetSize())
+					{
+						cout << "Список входит с " << q << "-го элемента.";
+						char s;
+						cout << endl << "Введите любой символ для выхода в меню";
+						cin >> s;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 18)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			if (GetEnter(A, B) == 0)
+			{
+				cout << "НЕ ВХОДИТ";
+				char s;
+				cout << endl << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+			}
+			else
+			{
+				int q = -1;
+				for (int i = 0; i < A.GetSize(); i++)
+				{
+					int g = i;
+					int c = 0;
+					for (int j = 0; j < B.GetSize(); j++)
+					{
+						if (A.Getelem(g) == B.Getelem(j))
+						{
+							q = g;
+							c++;
+							g++;
+						}
+					}
+					if (c == B.GetSize())
+					{
+						cout << "Список входит до " << q << "-го элемента.";
+						char s;
+						cout << endl << "Введите любой символ для выхода в меню";
+						cin >> s;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+		else if (a == 19)
+		{
+			cout << endl << "ЗАДАЙТЕ ВТОРОЙ СПИСОК ЦЕЛЫХ ПОЛОЖИТЕЛЬНЫХ ЧИСЕЛ (для окончания ввода введите '-1')" << endl;
+			List B;
+			B.in();
+			if (A.proverka())
+			{
+				cout << endl << "Список пустой" << endl;
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+				break;
+			}
+			else if (B.proverka())
+			{
+				cout << endl << "Список пустой" << endl;
+				char s;
+				cout << "Введите любой символ для выхода в меню";
+				cin >> s;
+				cin.clear();
+				cin.ignore();
+				break;
+			}
+			else
+			{
+				int a;
+				int b;
+				while (true)
+				{
+					try
+					{
+						cout << "Введите индекс элемента первого списка (от 0 до " << (A.GetSize() - 1) << "):";
+						cin >> a;
+						if (cin.fail())
+						{
+							throw invalid_argument("Неверный тип данных введенного значения.");
+						}
+						else
+						{
+							if ((a >= 0) && (a <= (A.GetSize() - 1)))
+							{
+								while (true)
+								{
+									try
+									{
+										cout << "Введите индекс элемента второго списка (от 0 до " << (B.GetSize() - 1) << "):";
+										cin >> b;
+										if (cin.fail())
+										{
+											throw invalid_argument("Неверный тип данных введенного значения.");
+										}
+										else
+										{
+											if ((b >= 0) && (b <= (B.GetSize() - 1)))
+											{
+												break;
+											}
+											else
+											{
+												cout << "Неверный тип данных введенного значения.";
+											}
+										}
+										cout << "Вы ввели: " << b << endl;
+									}
+									catch (const invalid_argument& e)
+									{
+										cerr << "Ошибка: " << e.what() << endl;
+
+										cin.clear();
+										cin.ignore();
+									}
+								}
+								int atmp = A.Getelem(a);
+								int btmp = B.Getelem(b);
+								if (b == 0)
+								{
+									B.pop_front();
+									B.push_front(atmp);
+								}
+								else if (b == B.GetSize() - 1)
+								{
+									B.pop_back();
+									B.add(atmp);
+								}
+								else if ((b > 0) && (b < (B.GetSize() - 1)))
+								{
+									List::Node* cur = B.Gethead();
+									for (int i = 0; i < b - 1; i++)
+									{
+										cur = cur->pNext;
+									}
+									List::Node* tmp = cur->pNext;
+									cur->pNext = new List::Node(atmp);
+									cur = cur->pNext;
+									cur->pNext = tmp->pNext;
+									delete (tmp);
+									B.SetSize(-1);
+								}
+								if (a == 0)
+								{
+									A.pop_front();
+									A.push_front(btmp);
+								}
+								else if (a == A.GetSize() - 1)
+								{
+									A.pop_back();
+									A.add(btmp);
+								}
+								else if ((a > 0) && (a < (A.GetSize() - 1)))
+								{
+									List::Node* cur = A.Gethead();
+									for (int i = 0; i < a - 1; i++)
+									{
+										cur = cur->pNext;
+									}
+									List::Node* tmp = cur->pNext;
+									cur->pNext = new List::Node(btmp);
+									cur = cur->pNext;
+									cur->pNext = tmp->pNext;
+									delete (tmp);
+									A.SetSize(-1);
+								}
+								cout << endl;
+								A.out();
+								cout << endl;
+								B.out();
+								char s;
+								cout << endl << "Введите любой символ для выхода в меню";
+								cin >> s;
+								cin.clear();
+								cin.ignore();
+								break;
+							}
+							else
+							{
+								cout << "Неверный тип данных введенного значения.";
+							}
+						}
+						cout << "Вы ввели: " << a << endl;
+					}
+					catch (const invalid_argument& e)
+					{
+						cerr << "Ошибка: " << e.what() << endl;
+						cin.clear();
+						cin.ignore();
+					}
+				}
+			}
+		}
+	}
+	A.out();
+}
